@@ -1,13 +1,14 @@
 package sm
 
 abstract class StateMachine[T, U] {
-  type StateMatcher = Matcher[T, U]
+  type FromMatcher = Matcher[(T, U)]
+  type ToMatcher = Matcher[T]
   type Transition = (T, U) => Unit
-  private type ExecutableAction = (StateMatcher, StateMatcher, Transition)
+  private type ExecutableAction = (FromMatcher, ToMatcher, Transition)
 
   class Action {
-    val from: StateMatcher = Matcher((_: T, _: U) => true)
-    val to: StateMatcher = Matcher((_: T, _: U) => true)
+    val from: FromMatcher = Matcher((_: (T, U)) => true)
+    val to: ToMatcher = Matcher((_: T) => true)
   }
   trait NoPayload extends Action {
     def run: Transition
@@ -30,7 +31,7 @@ abstract class StateMachine[T, U] {
 
     run(bean, user)
 
-    if (!to(bean, user)) {
+    if (!to(bean)) {
       throw new IllegalStateException("action applied but end state is fucked up")
     }
   }

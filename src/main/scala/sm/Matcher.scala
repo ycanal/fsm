@@ -1,16 +1,16 @@
 package sm
 
-trait Matcher[T, U] extends ((T, U) => Boolean) {
-  def |(that: Matcher[T, U]): Matcher[T, U] = {
-    Matcher((b: T, u: U) => this(b, u) || that(b, u))
+trait Matcher[T] extends (T => Boolean) {
+  def |(that: Matcher[T]): Matcher[T] = {
+    Matcher((b: T) => this(b) || that(b))
   }
-  def &(that: Matcher[T, U]): Matcher[T, U] = {
-    Matcher((b: T, u: U) => this(b, u) && that(b, u))
+  def &(that: Matcher[T]): Matcher[T] = {
+    Matcher((b: T) => this(b) && that(b))
   }
 }
 
 object Matcher {
-  def apply[T, U](f: (T, U) => Boolean): Matcher[T, U] = new Matcher[T, U] {
-    def apply(b: T, u: U): Boolean = f(b, u)
+  def apply[T](f: T => Boolean): Matcher[T] = new Matcher[T] {
+    def apply(b: T): Boolean = f(b)
   }
 }

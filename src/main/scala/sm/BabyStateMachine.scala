@@ -19,25 +19,25 @@ case object Milk extends Food
 
 object BabyStateMachine extends StateMachine[Baby, Parent] {
   // matchers
-  def is(expected: Parent): StateMatcher = Matcher({
+  def is(expected: Parent): FromMatcher = Matcher({
     case (_, p) if p == expected => true
     case _ => false
   })
-  val isMom: StateMatcher = is(Mom)
-  val isDad: StateMatcher = is(Dad)
+  val isMom: FromMatcher = is(Mom)
+  val isDad: FromMatcher = is(Dad)
 
-  def is(expected: BabyState): StateMatcher = Matcher({
+  def is(expected: BabyState): FromMatcher = Matcher({
     case (Baby(s), _) if s == expected => true
     case _ => false
   })
-  val isHungry: StateMatcher = is(Hungry)
-  val isCrying: StateMatcher = is(Crying)
-  val isAsleep: StateMatcher = is(Asleep)
-  val isHappy: StateMatcher = is(Happy)
+  val isHungry: FromMatcher = is(Hungry)
+  val isCrying: FromMatcher = is(Crying)
+  val isAsleep: FromMatcher = is(Asleep)
+  val isHappy: FromMatcher = is(Happy)
 
   case object Feed extends Action with Payload[Food] {
-    override val from: StateMatcher = isMom & isHungry
-    override val to: StateMatcher = isHappy
+    override val from: FromMatcher = isMom & isHungry
+    override val to: ToMatcher = Matcher((baby: Baby) => baby.state == Happy)
 
     def run: Food => Transition = {
       case Milk  => (baby, _) => baby.state = Happy
@@ -46,7 +46,7 @@ object BabyStateMachine extends StateMachine[Baby, Parent] {
   }
 
   case object Rock extends Action with NoPayload {
-    override val from: StateMatcher = isDad & isCrying
+    override val from: FromMatcher = isDad & isCrying
     override def run:  Transition = (baby, _) => baby.state = Happy
   }
 
