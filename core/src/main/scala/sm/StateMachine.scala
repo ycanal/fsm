@@ -19,7 +19,7 @@ abstract class StateMachine[T, U] {
     def apply(payload: P): ExecutableAction = (from, to, run(payload))
   }
 
-  val actions: List[Action]
+  val actions: Set[_ <: Action]
 
   def create(bean: T, user: U): Unit
   def update[P](bean: T, user: U, transition: ExecutableAction): Unit = {
@@ -37,6 +37,6 @@ abstract class StateMachine[T, U] {
   }
 
   def availableActions(bean: T, user: U): List[Action] = {
-    this.actions.filter(_.from(bean, user))
+    this.actions.filter(_.from(bean, user)).toList
   }
 }

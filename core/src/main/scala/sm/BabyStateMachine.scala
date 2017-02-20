@@ -35,6 +35,7 @@ object BabyStateMachine extends StateMachine[Baby, Parent] {
   val isAsleep: FromMatcher = is(Asleep)
   val isHappy: FromMatcher = is(Happy)
 
+  sealed class Action extends super.Action
   case object Feed extends Action with Payload[Food] {
     override val from: FromMatcher = isMom & isHungry
     override val to: ToMatcher = Matcher((baby: Baby) => baby.state == Happy)
@@ -50,6 +51,7 @@ object BabyStateMachine extends StateMachine[Baby, Parent] {
     override def run:  Transition = (baby, _) => baby.state = Happy
   }
 
-  override val actions: List[Action] = Nil
+  import sm.EnumerationMacros.sealedInstancesOf
+  override val actions: Set[Action] = sealedInstancesOf[Action]
   override def create(bean: Baby, user: Parent): Unit = () => ()
 }
