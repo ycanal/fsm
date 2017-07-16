@@ -25,7 +25,7 @@ abstract class StateMachine[T, U] {
   def update[P](bean: T, user: U, transition: ExecutableAction): Unit = {
     val (from, to, run) = transition
 
-    if (!from(bean, user)) {
+    if (!from((bean, user))) {
       throw new IllegalStateException("action cannot be applied")
     }
 
@@ -37,6 +37,6 @@ abstract class StateMachine[T, U] {
   }
 
   def availableActions(bean: T, user: U): List[Action] = {
-    this.actions.filter(_.from(bean, user)).toList
+    this.actions.filter(_.from((bean, user))).toList
   }
 }

@@ -1,7 +1,5 @@
 package sm
 
-import sun.plugin.dom.exception.InvalidStateException
-
 class Parent
 case object Dad extends Parent
 case object Mom extends Parent
@@ -42,7 +40,7 @@ object BabyStateMachine extends StateMachine[Baby, Parent] {
 
     def run: Food => Transition = {
       case Milk  => (baby, _) => baby.state = Happy
-      case _ => throw new InvalidStateException("baby threw up the food")
+      case _ => throw new IllegalStateException("baby threw up the food")
     }
   }
 
